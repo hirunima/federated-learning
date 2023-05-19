@@ -85,7 +85,113 @@ def average_weights(w):
         w_avg[key] = torch.div(w_avg[key], len(w))
     return w_avg
 
+def concat_weight_dataset(w):
+    """
+    Returns the concatanation of all of the weights.
+    """
+    # w_full = copy.deepcopy(w)
+    w_full=[[] for x in range(len(w))] #torch.zeros((len(w))).to('cuda')#
+    print(w_full)
+    for i in range(1, len(w)):
+        for key in w[i].keys():
+            
+            # 
+            # print(w_full[i],w[i][key].view(-1).shape)
+            # w_full[i]=torch.vstack((w_full[i].view(-1),w[i][key].view(-1)))
+            w_full[i].append(w[i][key].view(-1))
+            print(w[i][key].view(-1).shape)
+            # print(len(w_full[i]))
 
+            # w_full[i].concat()
+            #[key] += w[i][key]
+        # w_avg[key] = torch.div(w_avg[key], len(w))
+            # break
+        w_full[i]=torch.cat(w_full[i], dim=0)
+        # w_full[i]=w_full[i][1:]
+        
+        # print(len(w_full[i]))    
+        break
+    print('***************************************',len(w_full[i]))
+    return w_full
+
+def get_weight_dataset(w):
+    """
+    Returns the concatanation of each of the weights per key.
+    """
+    w_full = copy.deepcopy(w[0])
+    
+    for key in w_full.keys():
+        w_full[key]=w[0][key].view(1,-1)
+        for i in range(1, len(w)):
+            w_full[key]=torch.cat([w_full[key],w[i][key].view(1,-1)], dim=0)
+        print(w_full[key].shape,w[i][key].view(1,-1).shape)
+            # print(len(w_full[i]))
+
+            # w_full[i].concat()
+            #[key] += w[i][key]
+        # w_avg[key] = torch.div(w_avg[key], len(w))
+            # break
+        # w_full[i]=torch.cat(w_full[i], dim=0)
+        # w_full[i]=w_full[i][1:]
+        
+
+        # print(len(w_full[i]))    
+
+    print('***************************************',w_full.keys())
+    return w_full
+
+def reshape_weights(w,w_org):
+    """
+    Returns the original resized weights per key.
+    """
+    
+    for key in w_org.keys():
+        w[key]=w[key].view(w_org[key].shape)
+        print(w[key].shape)
+        # for i in range(1, len(w)):
+        #     w_full[key]=torch.cat([w_full[key],w[i][key].view(1,-1)], dim=0)
+        # print(w_full[key].shape,w[i][key].view(1,-1).shape)
+            # print(len(w_full[i]))
+
+            # w_full[i].concat()
+            #[key] += w[i][key]
+        # w_avg[key] = torch.div(w_avg[key], len(w))
+            # break
+        # w_full[i]=torch.cat(w_full[i], dim=0)
+        # w_full[i]=w_full[i][1:]
+        
+
+        # print(len(w_full[i]))    
+
+    print('***************************************',w.keys())
+    return w
+
+def reshape_weights(w,w_org):
+    """
+    Returns the original resized weights per key.
+    """
+    
+    for key in w_org.keys():
+        w[key]=w[key].view(w_org[key].shape)
+        print(w[key].shape)
+        # for i in range(1, len(w)):
+        #     w_full[key]=torch.cat([w_full[key],w[i][key].view(1,-1)], dim=0)
+        # print(w_full[key].shape,w[i][key].view(1,-1).shape)
+            # print(len(w_full[i]))
+
+            # w_full[i].concat()
+            #[key] += w[i][key]
+        # w_avg[key] = torch.div(w_avg[key], len(w))
+            # break
+        # w_full[i]=torch.cat(w_full[i], dim=0)
+        # w_full[i]=w_full[i][1:]
+        
+
+        # print(len(w_full[i]))    
+
+    print('***************************************',w.keys())
+    return w
+    
 def exp_details(args):
     print('\nExperimental details:')
     print(f'    Model     : {args.model}')

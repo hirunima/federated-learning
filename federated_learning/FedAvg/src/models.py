@@ -90,7 +90,7 @@ class CNNCifar(nn.Module):
         self.conv3_2 = nn.Conv2d(64, 64, kernel_size = 3,padding=1)
         self.fc1 = nn.Linear(64 * 4 * 4, 256)
         self.fc2 = nn.Linear(256, 64)
-        self.fc3 = nn.Linear(192, args.num_classes)
+        self.fc3 = nn.Linear(64, args.num_classes)
         ###############################
         # self.conv1_1 = nn.Conv2d(3, 64, kernel_size = 3,padding=1)
         # self.conv1_2 = nn.Conv2d(64, 64, kernel_size = 3,padding=1)
@@ -124,9 +124,60 @@ class CNNCifar(nn.Module):
         # x = self.pool(F.relu(self.conv5_2(F.relu(self.conv5_1(x)))))
         # x = F.relu(self.conv3(x))
         # print(x.size())
-        x = x.view(-1, 128 * 4 * 4)
+        x = x.view(-1, 64 * 4 * 4)
         # x = x.view(-1, 512 * 1 * 1)
         # x = F.dropout(x)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return F.log_softmax(x, dim=1)
+
+class CNNCifar_1(nn.Module):
+    def __init__(self, args):
+        super(CNNCifar_1, self).__init__()
+        # self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        # self.conv2 = nn.Conv2d(6, 16, 5)
+        # self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        # self.fc2 = nn.Linear(120, 84)
+        # self.fc3 = nn.Linear(84, args.num_classes)
+        # self.conv1 = nn.Conv2d(3, 64, kernel_size = 5)
+        # self.conv2 = nn.Conv2d(64, 64, kernel_size = 3)
+        # self.conv3 = nn.Conv2d(64, 128, kernel_size = 3)
+        # self.fc1 = nn.Linear(2048, 512)
+        # self.fc2 = nn.Linear(512, 192)
+        # self.fc3 = nn.Linear(192, args.num_classes)
+        ###############################
+        self.conv1 = nn.Conv2d(3, 64, kernel_size = 5)
+        self.conv2 = nn.Conv2d(64, 64, kernel_size = 5)
+        self.fc1 = nn.Linear(1600, 384)
+        self.fc2 = nn.Linear(384, 192)
+        self.fc3 = nn.Linear(192, args.num_classes)
+        ###############################
+        # self.conv1_1 = nn.Conv2d(3, 64, kernel_size = 3,padding=1)
+        # self.conv1_2 = nn.Conv2d(64, 64, kernel_size = 3,padding=1)
+
+        # self.conv2_1 = nn.Conv2d(64, 128, kernel_size = 3,padding=1)
+        # self.conv2_2 = nn.Conv2d(128, 128, kernel_size = 3,padding=1)
+
+        # self.conv3_1 = nn.Conv2d(128, 256, kernel_size = 3,padding=1)
+        # self.conv3_2 = nn.Conv2d(256, 256, kernel_size = 3,padding=1)
+
+        # self.conv4_1 = nn.Conv2d(256, 512, kernel_size = 3,padding=1)
+        # self.conv4_2 = nn.Conv2d(512, 512, kernel_size = 3,padding=1)
+
+        # self.conv5_1 = nn.Conv2d(512, 512, kernel_size = 3,padding=1)
+        # self.conv5_2 = nn.Conv2d(512, 512, kernel_size = 3,padding=1)
+
+        # self.fc1 = nn.Linear(512 * 1 * 1, 1024)
+        # self.fc2 = nn.Linear(1024, 512)
+        # self.fc3 = nn.Linear(512, args.num_classes)
+
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 10 * 10)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)

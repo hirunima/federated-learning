@@ -4,8 +4,9 @@
 
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, Dataset
-
+from torch.utils.data import DataLoader, Dataset,Subset
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 class DatasetSplit(Dataset):
     """An abstract Dataset class wrapped around Pytorch Dataset class.
@@ -27,7 +28,7 @@ class LocalUpdate(object):
     def __init__(self, args, dataset, idxs, logger):
         self.args = args
         self.logger = logger
-        self.trainloader, self.validloader, self.testloader = self.train_val_test(
+        self.trainloader, self.validloader, self.testloader,_ = self.train_val_test(
             dataset, list(idxs))
         self.device = 'cuda' if args.gpu else 'cpu'
         # Default criterion set to NLL loss function
@@ -49,7 +50,15 @@ class LocalUpdate(object):
                                  batch_size=int(len(idxs_val)/10), shuffle=False)
         testloader = DataLoader(DatasetSplit(dataset, idxs_test),
                                 batch_size=int(len(idxs_test)/10), shuffle=False)
-        return trainloader, validloader, testloader
+        d_0 = DataLoader(DatasetSplit(dataset, idxs_test),
+                                batch_size=int(len(idxs_test)/10), shuffle=False)
+        # indices = np.arange(len(dataset))
+        # train_indices, test_indices = train_test_split(indices, train_size=100*10, stratify=dataset.targets)
+
+        # d_0_dataset= Subset(dataset, train_indices)
+        # d_0=DataLoader(d_0_dataset,batch_size=self.args.local_bs, shuffle=True)
+
+        return trainloader, validloader, testloader,d_0
 
     def update_weights(self, model, global_round):
         # Set mode to train model
